@@ -3,23 +3,14 @@ import { collection, onSnapshot } from 'firebase/firestore';
 import { db } from './lib/firebase';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChefHat } from 'lucide-react';
-import { RecipeCard } from './components/RecipeCard';
-
-// Define the shape of our recipe data for TypeScript safety
-interface Recipe {
-  id: string;
-  title: string;
-  image: string;
-  ingredients: string[];
-  instructions: string;
-}
+// Import the shared type and the component
+import { RecipeCard, type Recipe } from './components/RecipeCard';
 
 const App: React.FC = () => {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Establishing a real-time connection to the "recipes" collection
     const unsubscribe = onSnapshot(collection(db, "recipes"), (snapshot) => {
       const recipeData = snapshot.docs.map(doc => ({
         id: doc.id,
@@ -33,13 +24,11 @@ const App: React.FC = () => {
       setLoading(false);
     });
 
-    // Cleanup the listener when the component unmounts
     return () => unsubscribe();
   }, []);
 
   return (
     <div className="min-h-screen bg-[#050505] text-slate-200 selection:bg-blue-500/30">
-      {/* Header Section */}
       <header className="border-b border-white/5 bg-black/40 backdrop-blur-md sticky top-0 z-50">
         <div className="max-w-400 mx-auto px-6 h-20 flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -78,7 +67,7 @@ const App: React.FC = () => {
             layout
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6"
           >
-            <AnimatePresence>
+            <AnimatePresence mode="popLayout">
               {recipes.map((recipe) => (
                 <RecipeCard key={recipe.id} recipe={recipe} />
               ))}
@@ -87,7 +76,6 @@ const App: React.FC = () => {
         )}
       </main>
 
-      {/* DevOps Footer */}
       <footer className="mt-20 border-t border-white/5 py-12 px-6">
         <div className="max-w-400 mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
           <p className="text-xs text-slate-600">
