@@ -2,7 +2,6 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Clock, Users, ChevronRight } from 'lucide-react';
 
-// Single Source of Truth for the Recipe type
 export interface Recipe {
   id: string;
   title: string;
@@ -13,9 +12,10 @@ export interface Recipe {
 
 interface RecipeCardProps {
   recipe: Recipe;
+  onViewPrep: (recipe: Recipe) => void;
 }
 
-export const RecipeCard: React.FC<RecipeCardProps> = ({ recipe }) => {
+export const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, onViewPrep }) => {
   return (
     <motion.div
       layout
@@ -25,21 +25,19 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({ recipe }) => {
       whileHover={{ y: -5 }}
       className="group relative bg-[#0A0A0A] border border-white/5 rounded-2xl overflow-hidden hover:border-blue-500/50 transition-all duration-300 shadow-2xl"
     >
-      {/* Visual Header */}
       <div className="relative h-64 overflow-hidden">
         <img 
           src={recipe.image} 
           alt={recipe.title} 
           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
         />
-        <div className="absolute inset-0 bg-linear-to-t from-[#0A0A0A] via-transparent to-transparent opacity-80" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A] via-transparent to-transparent opacity-80" />
         
         <div className="absolute top-4 left-4 bg-black/60 backdrop-blur-md border border-white/10 px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase text-blue-400">
           Chef Selection
         </div>
       </div>
 
-      {/* Content Section */}
       <div className="p-6">
         <h3 className="text-xl font-bold text-white mb-3 leading-tight group-hover:text-blue-400 transition-colors">
           {recipe.title}
@@ -56,7 +54,6 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({ recipe }) => {
           </div>
         </div>
 
-        {/* Ingredients Preview with defensive logic */}
         <div className="space-y-2 mb-6">
           <p className="text-[10px] font-black text-slate-600 uppercase tracking-widest">Ingredients</p>
           <div className="flex flex-wrap gap-2">
@@ -67,18 +64,15 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({ recipe }) => {
                 </span>
               ))
             ) : (
-              <span className="text-[11px] text-red-400/70 italic">Format Error: Array Expected</span>
-            )}
-            
-            {Array.isArray(recipe.ingredients) && recipe.ingredients.length > 3 && (
-              <span className="text-[11px] text-blue-500 font-bold">
-                +{recipe.ingredients.length - 3} MORE
-              </span>
+              <span className="text-[11px] text-red-400/70 italic">Format Error</span>
             )}
           </div>
         </div>
 
-        <button className="w-full bg-white/5 hover:bg-blue-600 border border-white/10 hover:border-blue-400 py-3 rounded-xl flex items-center justify-center gap-2 text-sm font-bold text-white transition-all group/btn">
+        <button 
+          onClick={() => onViewPrep(recipe)}
+          className="w-full bg-white/5 hover:bg-blue-600 border border-white/10 hover:border-blue-400 py-3 rounded-xl flex items-center justify-center gap-2 text-sm font-bold text-white transition-all group/btn"
+        >
           VIEW PREP
           <ChevronRight size={16} className="group-hover/btn:translate-x-1 transition-transform" />
         </button>
