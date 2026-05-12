@@ -1,92 +1,91 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Clock, Users, ChevronRight, Tag } from 'lucide-react';
 
-/**
- * Updated Recipe Interface
- * This acts as the 'contract' for our data. By adding 'category' here,
- * we resolve the TS2339 errors in App.tsx.
- */
-export interface Recipe {
+// Define the shape of a single recipe to match our Firestore data
+interface Recipe {
   id: string;
   title: string;
   image: string;
   ingredients: string[];
   instructions: string;
-  category: string; // The new field synced from Firestore
+  category: string;
 }
 
 interface RecipeCardProps {
   recipe: Recipe;
-  onViewPrep: (recipe: Recipe) => void;
 }
 
-export const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, onViewPrep }) => {
+const RecipeCard: React.FC<RecipeCardProps> = ({ recipe }) => {
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
     <motion.div
       layout
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.95 }}
-      whileHover={{ y: -5 }}
-      className="group relative bg-[#0A0A0A] border border-white/5 rounded-2xl overflow-hidden hover:border-blue-500/50 transition-all duration-300 shadow-2xl"
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.9 }}
+      transition={{ duration: 0.3 }}
+      className="group relative bg-white/5 border border-white/10 rounded-2xl overflow-hidden hover:border-blue-500/50 hover:bg-white/10 transition-all duration-500 shadow-xl"
     >
-      <div className="relative h-64 overflow-hidden">
-        <img 
-          src={recipe.image} 
-          alt={recipe.title} 
+      {/* IMAGE SECTION */}
+      <div className="relative h-56 overflow-hidden">
+        <img
+          src={recipe.image}
+          alt={recipe.title}
+          loading="lazy" // Critical for performance with 200+ images
           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A] via-transparent to-transparent opacity-80" />
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-60" />
         
-        {/* Category Badge */}
-        <div className="absolute top-4 left-4 bg-blue-600/20 backdrop-blur-md border border-blue-500/30 px-3 py-1 rounded-full flex items-center gap-1.5">
-          <Tag size={10} className="text-blue-400" />
-          <span className="text-[9px] font-black tracking-widest uppercase text-blue-400">
-            {recipe.category || 'Featured'}
-          </span>
-        </div>
+        {/* CATEGORY BADGE */}
+        <span className="absolute top-4 left-4 px-3 py-1 bg-blue-600/80 backdrop-blur-md text-[10px] font-black uppercase tracking-widest text-white rounded-full">
+          {recipe.category}
+        </span>
       </div>
 
+      {/* CONTENT SECTION */}
       <div className="p-6">
-        <h3 className="text-xl font-bold text-white mb-3 leading-tight group-hover:text-blue-400 transition-colors line-clamp-1">
+        <h3 className="text-xl font-bold leading-tight mb-4 group-hover:text-blue-400 transition-colors">
           {recipe.title}
         </h3>
-        
-        <div className="flex items-center gap-4 mb-6 text-slate-500 text-xs font-medium">
-          <div className="flex items-center gap-1">
-            <Clock size={14} className="text-blue-500" />
-            <span>25 MIN</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <Users size={14} className="text-blue-500" />
-            <span>SERVES 2</span>
-          </div>
-        </div>
 
-        <div className="space-y-2 mb-6">
-          <p className="text-[10px] font-black text-slate-600 uppercase tracking-widest">Core Ingredients</p>
-          <div className="flex flex-wrap gap-2">
-            {Array.isArray(recipe.ingredients) ? (
-              recipe.ingredients.slice(0, 3).map((item, idx) => (
-                <span key={idx} className="text-[11px] text-slate-400 bg-white/5 px-2 py-1 rounded-md border border-white/5 whitespace-nowrap">
-                  {item}
-                </span>
-              ))
-            ) : (
-              <span className="text-[11px] text-red-400/70 italic uppercase tracking-tighter">Data Format Error</span>
-            )}
-          </div>
-        </div>
+        <div className="flex flex-col gap-4">
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className="w-full py-2 bg-white/5 border border-white/10 rounded-xl text-xs font-bold uppercase tracking-widest hover:bg-white/10 transition-colors"
+          >
+            {isOpen ? 'Close Details' : 'View Recipe'}
+          </button>
 
-        <button 
-          onClick={() => onViewPrep(recipe)}
-          className="w-full bg-white/5 hover:bg-blue-600 border border-white/10 hover:border-blue-400 py-3 rounded-xl flex items-center justify-center gap-2 text-sm font-bold text-white transition-all group/btn shadow-inner"
-        >
-          VIEW PREP
-          <ChevronRight size={16} className="group-hover/btn:translate-x-1 transition-transform" />
-        </button>
+          {/* EXPANDABLE DETAILS */}
+          {isOpen && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              className="space-y-4 pt-4 border-t border-white/10"
+            >
+              <div>
+                <h4 className="text-[10px] font-black uppercase text-blue-400 mb-2">Ingredients</h4>
+                <ul className="text-sm text-slate-400 space-y-1 list-disc list-inside">
+                  {recipe.ingredients.slice(0, 8).map((ing, i) => (
+                    <li key={i}>{ing}</li>
+                  ))}
+                  {recipe.ingredients.length > 8 && <li className="italic text-xs">And more...</li>}
+                </ul>
+              </div>
+
+              <div>
+                <h4 className="text-[10px] font-black uppercase text-blue-400 mb-2">Instructions</h4>
+                <p className="text-xs text-slate-400 leading-relaxed line-clamp-4">
+                  {recipe.instructions}
+                </p>
+              </div>
+            </motion.div>
+          )}
+        </div>
       </div>
     </motion.div>
   );
 };
+
+export default RecipeCard;

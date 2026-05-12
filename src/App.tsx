@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { db } from './lib/firebase'; // Your Firebase config file
 import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
 import { motion, AnimatePresence } from 'framer-motion';
-import RecipeCard from './components/RecipeCard';
+import  RecipeCard  from './components/RecipeCard';
 
 // 1. DATA TYPES
 // Defines the shape of our Recipe objects
