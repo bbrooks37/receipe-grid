@@ -58,7 +58,7 @@ Bash
 ## Open your project in VS Code.
 ## Create a new file named `README.md` in the root folder.
 ## Paste the content above into it.
-4. **Important**: Replace the bracketed links like `[Insert Your Vercel **URL** Here]` with your actual project links.
+4. **Important**: Replace the bracketed links like `[(https://receipe-grid.vercel.app/)]` with your actual project links.
 ## Save, then:
     
 ```bash
