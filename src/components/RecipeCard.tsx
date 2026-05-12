@@ -1,13 +1,19 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Clock, Users, ChevronRight } from 'lucide-react';
+import { Clock, Users, ChevronRight, Tag } from 'lucide-react';
 
+/**
+ * Updated Recipe Interface
+ * This acts as the 'contract' for our data. By adding 'category' here,
+ * we resolve the TS2339 errors in App.tsx.
+ */
 export interface Recipe {
   id: string;
   title: string;
   image: string;
   ingredients: string[];
   instructions: string;
+  category: string; // The new field synced from Firestore
 }
 
 interface RecipeCardProps {
@@ -33,13 +39,17 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, onViewPrep }) =>
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A] via-transparent to-transparent opacity-80" />
         
-        <div className="absolute top-4 left-4 bg-black/60 backdrop-blur-md border border-white/10 px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase text-blue-400">
-          Chef Selection
+        {/* Category Badge */}
+        <div className="absolute top-4 left-4 bg-blue-600/20 backdrop-blur-md border border-blue-500/30 px-3 py-1 rounded-full flex items-center gap-1.5">
+          <Tag size={10} className="text-blue-400" />
+          <span className="text-[9px] font-black tracking-widest uppercase text-blue-400">
+            {recipe.category || 'Featured'}
+          </span>
         </div>
       </div>
 
       <div className="p-6">
-        <h3 className="text-xl font-bold text-white mb-3 leading-tight group-hover:text-blue-400 transition-colors">
+        <h3 className="text-xl font-bold text-white mb-3 leading-tight group-hover:text-blue-400 transition-colors line-clamp-1">
           {recipe.title}
         </h3>
         
@@ -55,23 +65,23 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, onViewPrep }) =>
         </div>
 
         <div className="space-y-2 mb-6">
-          <p className="text-[10px] font-black text-slate-600 uppercase tracking-widest">Ingredients</p>
+          <p className="text-[10px] font-black text-slate-600 uppercase tracking-widest">Core Ingredients</p>
           <div className="flex flex-wrap gap-2">
             {Array.isArray(recipe.ingredients) ? (
               recipe.ingredients.slice(0, 3).map((item, idx) => (
-                <span key={idx} className="text-[11px] text-slate-400 bg-white/5 px-2 py-1 rounded-md border border-white/5">
+                <span key={idx} className="text-[11px] text-slate-400 bg-white/5 px-2 py-1 rounded-md border border-white/5 whitespace-nowrap">
                   {item}
                 </span>
               ))
             ) : (
-              <span className="text-[11px] text-red-400/70 italic">Format Error</span>
+              <span className="text-[11px] text-red-400/70 italic uppercase tracking-tighter">Data Format Error</span>
             )}
           </div>
         </div>
 
         <button 
           onClick={() => onViewPrep(recipe)}
-          className="w-full bg-white/5 hover:bg-blue-600 border border-white/10 hover:border-blue-400 py-3 rounded-xl flex items-center justify-center gap-2 text-sm font-bold text-white transition-all group/btn"
+          className="w-full bg-white/5 hover:bg-blue-600 border border-white/10 hover:border-blue-400 py-3 rounded-xl flex items-center justify-center gap-2 text-sm font-bold text-white transition-all group/btn shadow-inner"
         >
           VIEW PREP
           <ChevronRight size={16} className="group-hover/btn:translate-x-1 transition-transform" />
