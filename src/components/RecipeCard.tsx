@@ -1,90 +1,82 @@
-import { useState } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
-import { BookOpen, Utensils, CheckCircle2 } from 'lucide-react';
+import { Clock, Users, ChevronRight } from 'lucide-react';
 
-interface Recipe {
-  id: number;
+// Exporting the interface so App.tsx can import and use the exact same type
+export interface Recipe {
+  id: string; // Firebase IDs are always strings
   title: string;
   image: string;
   ingredients: string[];
   instructions: string;
 }
 
-export const RecipeCard = ({ recipe }: { recipe: Recipe }) => {
-  const [isFlipped, setIsFlipped] = useState(false);
+interface RecipeCardProps {
+  recipe: Recipe;
+}
 
+export const RecipeCard: React.FC<RecipeCardProps> = ({ recipe }) => {
   return (
-    <div 
-      className="group h-[320px] [perspective:1000px] cursor-pointer"
-      onClick={() => setIsFlipped(!isFlipped)}
+    <motion.div
+      layout
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.95 }}
+      whileHover={{ y: -5 }}
+      className="group relative bg-[#0A0A0A] border border-white/5 rounded-2xl overflow-hidden hover:border-blue-500/50 transition-all duration-300 shadow-2xl"
     >
-      <motion.div
-        initial={false}
-        animate={{ rotateY: isFlipped ? 180 : 0 }}
-        transition={{ duration: 0.6, type: "spring", stiffness: 260, damping: 20 }}
-        className="relative w-full h-full [transform-style:preserve-3d]"
-      >
-        {/* Front */}
-        <div className="absolute inset-0 w-full h-full rounded-[2rem] overflow-hidden [backface-visibility:hidden] border border-zinc-800/50 bg-zinc-900 shadow-2xl">
-          <img 
-            src={recipe.image} 
-            alt={recipe.title}
-            className="w-full h-full object-cover opacity-60 group-hover:opacity-80 transition-opacity duration-500" 
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
-          
-          <div className="absolute bottom-6 left-6 right-6">
-            <div className="flex items-center gap-2 mb-1">
-              <Utensils className="w-3 h-3 text-blue-500" />
-              <span className="text-[9px] uppercase tracking-[0.3em] text-blue-500 font-bold">Featured Recipe</span>
-            </div>
-            <h3 className="text-xl font-black text-white tracking-tighter leading-tight uppercase italic">
-              {recipe.title}
-            </h3>
+      {/* Image Container with Overlay */}
+      <div className="relative h-64 overflow-hidden">
+        <img 
+          src={recipe.image} 
+          alt={recipe.title} 
+          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A] via-transparent to-transparent opacity-80" />
+        
+        {/* Subtle Badge */}
+        <div className="absolute top-4 left-4 bg-black/60 backdrop-blur-md border border-white/10 px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase text-blue-400">
+          Chef Selection
+        </div>
+      </div>
+
+      {/* Content Section */}
+      <div className="p-6">
+        <h3 className="text-xl font-bold text-white mb-3 leading-tight group-hover:text-blue-400 transition-colors">
+          {recipe.title}
+        </h3>
+        
+        <div className="flex items-center gap-4 mb-6 text-slate-500 text-xs font-medium">
+          <div className="flex items-center gap-1">
+            <Clock size={14} className="text-blue-500" />
+            <span>25 MIN</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <Users size={14} className="text-blue-500" />
+            <span>SERVES 2</span>
           </div>
         </div>
 
-        {/* Back */}
-        <div className="absolute inset-0 w-full h-full rounded-[2rem] bg-[#080808] border-2 border-blue-600/20 p-6 [transform:rotateY(180deg)] [backface-visibility:hidden] flex flex-col shadow-[0_0_40px_rgba(37,99,235,0.07)]">
-          <div className="flex items-center justify-between mb-4 border-b border-zinc-800/80 pb-3">
-            <div className="flex items-center gap-2">
-              <BookOpen className="w-4 h-4 text-blue-500" />
-              <h3 className="text-[11px] font-bold text-white uppercase tracking-widest truncate max-w-[140px]">
-                {recipe.title}
-              </h3>
-            </div>
-            <CheckCircle2 className="w-4 h-4 text-zinc-800" />
-          </div>
-          
-          <div className="flex-1 overflow-y-auto space-y-5 pr-1">
-            <div>
-              <p className="text-[9px] uppercase tracking-[0.2em] text-blue-500 font-black mb-2">Ingredients</p>
-              <ul className="space-y-1.5">
-                {recipe.ingredients.map((ing, i) => (
-                  <li key={i} className="text-[12px] text-zinc-400 flex items-start gap-2 leading-tight">
-                    <span className="w-1 h-1 bg-blue-600 rounded-full mt-1.5 shrink-0" />
-                    {ing}
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div>
-              <p className="text-[9px] uppercase tracking-[0.2em] text-blue-500 font-black mb-2">Method</p>
-              <p className="text-[12px] text-zinc-300 leading-relaxed italic font-medium">
-                {recipe.instructions}
-              </p>
-            </div>
-          </div>
-
-          <div className="mt-4 pt-3 border-t border-zinc-900 flex justify-between items-center text-[8px] text-zinc-700 uppercase tracking-widest font-bold">
-            <span>Pixel.Grid // Network</span>
-            <div className="flex gap-1">
-              <div className="w-1 h-1 bg-zinc-800 rounded-full" />
-              <div className="w-1 h-1 bg-blue-600 rounded-full" />
-            </div>
+        {/* Ingredients Preview */}
+        <div className="space-y-2 mb-6">
+          <p className="text-[10px] font-black text-slate-600 uppercase tracking-widest">Ingredients</p>
+          <div className="flex flex-wrap gap-2">
+            {recipe.ingredients.slice(0, 3).map((item, idx) => (
+              <span key={idx} className="text-[11px] text-slate-400 bg-white/5 px-2 py-1 rounded-md border border-white/5">
+                {item}
+              </span>
+            ))}
+            {recipe.ingredients.length > 3 && (
+              <span className="text-[11px] text-blue-500 font-bold">+{recipe.ingredients.length - 3} MORE</span>
+            )}
           </div>
         </div>
-      </motion.div>
-    </div>
+
+        <button className="w-full bg-white/5 hover:bg-blue-600 border border-white/10 hover:border-blue-400 py-3 rounded-xl flex items-center justify-center gap-2 text-sm font-bold text-white transition-all group/btn">
+          VIEW PREP
+          <ChevronRight size={16} className="group-hover/btn:translate-x-1 transition-transform" />
+        </button>
+      </div>
+    </motion.div>
   );
 };
