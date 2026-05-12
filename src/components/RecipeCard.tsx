@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 
-// Define the shape of a single recipe to match Firestore data
+// 1. DATA TYPE INTERFACE
 export interface Recipe {
   id: string;
   title: string;
@@ -15,6 +15,7 @@ interface RecipeCardProps {
   recipe: Recipe;
 }
 
+// 2. NAMED EXPORT
 export const RecipeCard: React.FC<RecipeCardProps> = ({ recipe }) => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -27,7 +28,7 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({ recipe }) => {
       transition={{ duration: 0.3 }}
       className="group relative bg-white/5 border border-white/10 rounded-2xl overflow-hidden hover:border-blue-500/50 hover:bg-white/10 transition-all duration-500 shadow-xl"
     >
-      {/* IMAGE SECTION WITH LAZY LOADING */}
+      {/* IMAGE SECTION */}
       <div className="relative h-56 overflow-hidden bg-slate-900">
         <motion.img
           initial={{ opacity: 0 }}
@@ -35,7 +36,6 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({ recipe }) => {
           transition={{ duration: 0.5 }}
           src={recipe.image || 'https://via.placeholder.com/400x300?text=No+Image'}
           alt={recipe.title}
-          // Native Lazy Loading to prevent lag
           loading="lazy" 
           width="400"
           height="300"
@@ -44,7 +44,6 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({ recipe }) => {
         />
         <div className="absolute inset-0 bg-linear-to-t from-slate-950 via-transparent to-transparent opacity-60" />
         
-        {/* CATEGORY BADGE */}
         <span className="absolute top-4 left-4 px-3 py-1 bg-blue-600/80 backdrop-blur-md text-[10px] font-black uppercase tracking-widest text-white rounded-full">
           {recipe.category}
         </span>
@@ -74,7 +73,8 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({ recipe }) => {
               <div>
                 <h4 className="text-[10px] font-black uppercase text-blue-400 mb-2">Ingredients</h4>
                 <ul className="text-sm text-slate-400 space-y-1 list-disc list-inside">
-                  {recipe.ingredients.slice(0, 8).map((ing, i) => (
+                  {/* Mapping all ingredients without slicing */}
+                  {recipe.ingredients.map((ing, i) => (
                     <li key={i}>{ing}</li>
                   ))}
                 </ul>
@@ -82,7 +82,8 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({ recipe }) => {
 
               <div>
                 <h4 className="text-[10px] font-black uppercase text-blue-400 mb-2">Instructions</h4>
-                <p className="text-xs text-slate-400 leading-relaxed line-clamp-4">
+                {/* Removed line-clamp and added whitespace preservation */}
+                <p className="text-xs text-slate-400 leading-relaxed whitespace-pre-line">
                   {recipe.instructions}
                 </p>
               </div>
