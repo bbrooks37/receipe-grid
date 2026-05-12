@@ -41,7 +41,7 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({ recipe }) => {
             loading="lazy"
             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 to-transparent" />
+          <div className="absolute inset-0 bg-linear-to-t from-slate-950/80 to-transparent" />
           <span className="absolute top-4 left-4 px-3 py-1 bg-blue-600/80 backdrop-blur-md text-[10px] font-black uppercase tracking-widest text-white rounded-full">
             {recipe.category}
           </span>
@@ -58,7 +58,7 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({ recipe }) => {
       {/* MODAL OVERLAY */}
       <AnimatePresence>
         {isOpen && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-6">
+          <div className="fixed inset-0 z-100 flex items-center justify-center p-4 md:p-6">
             {/* Backdrop */}
             <motion.div
               initial={{ opacity: 0 }}
